@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>One-Sided & Still Real</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Sacramento&family=Josefin+Sans:wght@100;200;300&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#02010a;--rose:#ff9fb0;--gold:#e8b86d;--cream:#fff5e8;--muted:rgba(240,220,200,.65);--soft:rgba(255,245,230,.9);--deep-rose:#d85080;--pain:#8a3a5a;--heartbreak:#b84060;}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--soft);font-family:'Josefin Sans',sans-serif;font-weight:200;overflow-x:hidden;cursor:none;}
+
+#cur{position:fixed;width:12px;height:12px;background:var(--rose);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 20px var(--rose),0 0 40px rgba(255,159,176,.5);mix-blend-mode:screen;animation:heartbeat 1.5s ease-in-out infinite;}
+@keyframes heartbeat{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.15)}}
+#cur2{position:fixed;width:40px;height:40px;border:1px solid rgba(255,159,176,.35);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .14s ease-out,top .14s ease-out;}
+
+#cv-rain,#cv-petal{position:fixed;inset:0;pointer-events:none;z-index:1;}
+#cv-rain{opacity:.3;}
+.vignette{position:fixed;inset:0;z-index:2;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,transparent 20%,rgba(2,1,10,.95) 100%);}
+
+.prog-wrap{position:fixed;top:0;left:0;right:0;height:3px;z-index:1000;background:rgba(255,255,255,.05);}
+.prog{height:100%;width:0%;background:linear-gradient(90deg,#d85080,#e8b86d,#7095c0);box-shadow:0 0 15px rgba(232,184,109,.7),0 0 30px rgba(216,80,128,.4);transition:width .12s linear;}
+
+.ndots{position:fixed;right:18px;top:50%;transform:translateY(-50%);z-index:100;display:flex;flex-direction:column;gap:11px;}
+.nd{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.25);cursor:pointer;transition:all .4s cubic-bezier(.22,1,.36,1);}
+.nd.on{background:var(--rose);border-color:var(--rose);box-shadow:0 0 15px var(--rose),0 0 30px rgba(255,159,176,.5);transform:scale(2);}
+
+.scene{position:relative;z-index:10;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:100px 22px;overflow:hidden;opacity:0;transform:translateY(40px);transition:opacity 1.6s cubic-bezier(.22,1,.36,1),transform 1.6s cubic-bezier(.22,1,.36,1);}
+.scene.on{opacity:1;transform:none;}
+.eyebrow{font-weight:100;font-size:9px;letter-spacing:.6em;text-transform:uppercase;color:rgba(232,184,109,.6);margin-bottom:1.5rem;z-index:10;text-shadow:0 0 20px rgba(232,184,109,.3);}
+
+/* COVER */
+#s1{background:radial-gradient(ellipse at 50% 58%,#1a0c2e 0%,#10081f 38%,var(--bg) 100%);text-align:center;opacity:1;transform:none;}
+#cv-cover{position:absolute;inset:0;z-index:0;width:100%;height:100%;}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;animation:orbf ease-in-out infinite alternate;}
+@keyframes orbf{from{transform:translate(0,0) scale(1)}to{transform:translate(15px,-22px) scale(1.08)}}
+.cover-inner{position:relative;z-index:10;}
+.c-pre{font-size:9px;font-weight:100;letter-spacing:.55em;text-transform:uppercase;color:rgba(232,184,109,.4);margin-bottom:1.8rem;opacity:0;animation:ru 1.2s .5s ease forwards;text-shadow:0 0 15px rgba(232,184,109,.2);}
+.c-t1{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:clamp(3.5rem,12vw,9rem);line-height:.9;background:linear-gradient(172deg,#fff8f0 0%,#ffd4a0 28%,#e89060 58%,#c06850 85%,#904030 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 80px rgba(232,144,96,.35));opacity:0;animation:tb 2.2s .8s cubic-bezier(.22,1,.36,1) forwards;}
+.c-amp{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(1.4rem,5vw,3rem);color:rgba(232,144,96,.6);display:block;margin:.3em 0;opacity:0;animation:ru 1.2s 1.5s ease forwards;text-shadow:0 0 25px rgba(232,144,96,.25);}
+.c-sub{font-size:clamp(.65rem,1.9vw,.82rem);font-weight:100;letter-spacing:.45em;text-transform:uppercase;color:rgba(255,245,230,.3);margin-top:1.8rem;line-height:2.4;opacity:0;animation:ru 1.2s 2s ease forwards;text-shadow:0 2px 10px rgba(0,0,0,.5);}
+.c-rule{display:flex;align-items:center;gap:1.4rem;justify-content:center;margin:1.8rem auto;opacity:0;animation:ru 1.2s 2.4s ease forwards;}
+.c-rule::before,.c-rule::after{content:'';width:60px;height:1.5px;background:linear-gradient(90deg,transparent,rgba(232,184,109,.6));}
+.c-rule::after{background:linear-gradient(90deg,rgba(232,184,109,.6),transparent);}
+.c-rule span{color:var(--gold);font-size:15px;opacity:.7;text-shadow:0 0 15px rgba(232,184,109,.4);}
+.c-scroll{margin-top:3.5rem;display:flex;flex-direction:column;align-items:center;gap:10px;color:rgba(255,159,176,.4);font-size:8px;letter-spacing:.45em;text-transform:uppercase;opacity:0;animation:ru 1.2s 2.7s ease forwards;text-shadow:0 0 10px rgba(255,159,176,.2);}
+.c-sline{width:1.5px;height:60px;background:linear-gradient(to bottom,rgba(255,159,176,.6),transparent);animation:sp 2.5s infinite ease-in-out;box-shadow:0 0 10px rgba(255,159,176,.3);}
+@keyframes ru{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes tb{from{opacity:0;transform:translateY(28px) scale(.96);filter:blur(12px);}60%{filter:blur(0);}to{opacity:1;transform:none;}}
+@keyframes sp{0%,100%{opacity:1;transform:scaleY(1)}50%{opacity:.25;transform:scaleY(.4)}}
+
+/* GLASS CARD */
+.gcard{max-width:680px;width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:clamp(2rem,5vw,3.5rem);position:relative;overflow:hidden;backdrop-filter:blur(22px);z-index:10;box-shadow:0 8px 32px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.1);}
+.gcard::before{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;background:linear-gradient(90deg,transparent,rgba(255,159,176,.35),rgba(232,184,109,.3),transparent);}
+.ch{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:clamp(2rem,5.5vw,3.2rem);color:var(--cream);line-height:1.12;margin-bottom:1.8rem;text-shadow:0 2px 15px rgba(0,0,0,.4);}
+.cp{font-size:clamp(.9rem,2.1vw,1.02rem);line-height:2.2;color:var(--muted);margin-bottom:1.1rem;text-shadow:0 1px 8px rgba(0,0,0,.3);}
+.cp em{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.08em;color:var(--rose);text-shadow:0 0 12px rgba(255,159,176,.3);}
+.cp strong{color:rgba(255,245,230,.95);font-weight:300;}
+.qpill{margin-top:.9rem;padding:.85rem 1.1rem;border-left:2.5px solid;border-radius:0 10px 10px 0;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(.95rem,2.1vw,1.08rem);line-height:1.75;background:rgba(255,255,255,.03);box-shadow:inset 0 1px 3px rgba(0,0,0,.2);}
+.qr{border-color:rgba(255,159,176,.5);color:rgba(255,159,176,.85);text-shadow:0 0 10px rgba(255,159,176,.2);}
+.qg{border-color:rgba(232,184,109,.5);color:rgba(232,184,109,.85);text-shadow:0 0 10px rgba(232,184,109,.2);}
+.qd{border-color:rgba(120,140,160,.4);color:rgba(200,210,220,.65);}
+.qb{border-color:rgba(100,150,200,.4);color:rgba(160,200,240,.75);text-shadow:0 0 10px rgba(160,200,240,.15);}
+
+/* BENCH SCENE */
+.bench-scene{margin:2.5rem 0;padding:2.2rem 1.5rem;background:rgba(0,0,0,.3);border-radius:18px;display:flex;align-items:flex-end;justify-content:center;gap:0;position:relative;overflow:hidden;box-shadow:inset 0 2px 8px rgba(0,0,0,.4);}
+.bench-scene::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center bottom,rgba(232,184,109,.08),transparent 70%);}
+.fig{display:flex;flex-direction:column;align-items:center;}
+.fh{width:30px;height:30px;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,.4);}
+.fn{width:9px;height:8px;}
+.fb{width:28px;border-radius:6px 6px 0 0;}
+.fl{display:flex;gap:4px;}
+.fleg{width:11px;height:20px;border-radius:0 0 5px 5px;}
+.fname{font-size:8px;letter-spacing:.35em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:12px;text-shadow:0 0 8px rgba(255,255,255,.15);}
+.boy .fh{background:radial-gradient(circle at 38% 32%,#a8c4e0,#4a6888);box-shadow:0 0 15px rgba(168,196,224,.3);}
+.boy .fn{background:#6a88a8;}
+.boy .fb{height:54px;background:linear-gradient(180deg,#5a7898,#304858);}
+.boy .fleg{background:#283848;}
+.girl .fh{background:radial-gradient(circle at 38% 32%,#ffc4c4,#d88080);box-shadow:0 0 15px rgba(255,196,196,.3);}
+.girl .fn{background:#e8a0a0;}
+.girl .fb{height:62px;background:linear-gradient(180deg,#d87070,#984848);}
+.girl .fleg{background:#763838;}
+.bplank{width:105px;height:12px;align-self:flex-end;background:linear-gradient(180deg,#6a4f38,#4a3020);border-radius:4px;margin:0 6px;box-shadow:0 5px 15px rgba(0,0,0,.6);}
+.heart-float{position:absolute;top:18%;left:50%;transform:translateX(-50%);font-size:18px;animation:hf 3.5s ease-in-out infinite;opacity:.6;filter:drop-shadow(0 0 12px rgba(255,159,176,.5));}
+@keyframes hf{0%,100%{transform:translateX(-50%) translateY(0) scale(1);opacity:.4}50%{transform:translateX(-50%) translateY(-14px) scale(1.15);opacity:.9}}
+
+/* PHONE */
+#s3{background:radial-gradient(ellipse at 25% 60%,#061510 0%,var(--bg) 70%);}
+.phone{width:295px;max-width:90vw;z-index:10;}
+.pshell{background:linear-gradient(160deg,#2a2a42,#181830);border-radius:44px;padding:14px;box-shadow:0 0 0 1.5px rgba(255,255,255,.09),0 55px 130px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.12);}
+.pnotch{width:72px;height:10px;background:#0a0a12;border-radius:0 0 11px 11px;margin:0 auto 7px;}
+.pscreen{border-radius:30px;overflow:hidden;}
+.wabar{background:linear-gradient(135deg,#086e5e,#0c9080);padding:11px 15px;display:flex;align-items:center;gap:11px;}
+.waav{width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 36% 30%,#ffc8c8,#d87070);font-size:17px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.3);}
+.wanm{font-size:14px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.3);}
+.wast{font-size:9.5px;color:rgba(255,255,255,.6);}
+.waarea{min-height:345px;background:#0e1828;background-image:radial-gradient(rgba(255,255,255,.018) 1px,transparent 1px);background-size:22px 22px;padding:13px 11px;display:flex;flex-direction:column;gap:8px;}
+.bbl{max-width:82%;padding:9px 12px 17px;border-radius:15px;font-size:12.5px;line-height:1.6;position:relative;opacity:0;transform:translateY(10px) scale(.93);transition:opacity .6s ease,transform .6s ease;box-shadow:0 2px 8px rgba(0,0,0,.3);}
+.bbl.show{opacity:1;transform:none;}
+.bbl.out{background:#005d4e;color:#e8f8f0;align-self:flex-end;border-bottom-right-radius:3px;}
+.bbl.in{background:#1f3444;color:#c8dce8;align-self:flex-start;border-bottom-left-radius:3px;}
+.bblt{position:absolute;bottom:4px;right:10px;font-size:9px;color:rgba(255,255,255,.35);}
+.bbl.out .bblt{color:rgba(200,235,220,.5);}
+.chip{align-self:center;background:rgba(255,255,255,.08);color:rgba(210,220,230,.5);font-size:10px;padding:4px 15px;border-radius:22px;border:1px solid rgba(255,255,255,.06);margin:4px 0;}
+.tdots{display:none;align-self:flex-start;background:#1f3444;border-radius:15px 15px 15px 3px;padding:11px 15px;gap:5px;align-items:center;}
+.td{width:8px;height:8px;border-radius:50%;background:rgba(210,225,240,.5);animation:tda 1.3s infinite ease-in-out;}
+.td:nth-child(2){animation-delay:.22s;}.td:nth-child(3){animation-delay:.44s;}
+@keyframes tda{0%,80%,100%{transform:scale(.75);opacity:.35}40%{transform:scale(1.15);opacity:1}}
+.wa-note{margin-top:2.2rem;text-align:center;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(1.05rem,2.6vw,1.3rem);color:rgba(220,200,180,.55);max-width:330px;line-height:2;z-index:10;text-shadow:0 2px 10px rgba(0,0,0,.4);}
+
+/* POLAROID */
+#s4{background:radial-gradient(ellipse at 50% 35%,#1c0a42 0%,#120628 35%,var(--bg) 100%);text-align:center;}
+.pstage{position:relative;margin:0 auto 3rem;width:235px;z-index:10;}
+.polaroid{background:#faf6f0;padding:15px 15px 52px;box-shadow:0 3px 6px rgba(0,0,0,.15),0 28px 80px rgba(0,0,0,.8);transform:rotate(-2.8deg);transition:transform .7s cubic-bezier(.22,1,.36,1);}
+.polaroid:hover{transform:rotate(0deg) scale(1.04);}
+.polimg{width:100%;aspect-ratio:1;overflow:hidden;background:linear-gradient(155deg,#1c0c3e,#12202e,#0a1222);position:relative;display:flex;align-items:flex-end;justify-content:center;padding-bottom:15px;}
+.bk{position:absolute;border-radius:50%;filter:blur(10px);animation:bka ease-in-out infinite alternate;}
+@keyframes bka{from{transform:scale(1)}to{transform:scale(1.2) translate(3px,-6px)}}
+.pfigs{display:flex;align-items:flex-end;gap:6px;position:relative;z-index:2;}
+.pf{display:flex;flex-direction:column;align-items:center;}
+.pfh{width:19px;height:19px;border-radius:50%;}
+.pfb{width:17px;border-radius:4px 4px 0 0;}
+.pfboy .pfh{background:radial-gradient(circle,#a0bcd8,#406888);}
+.pfboy .pfb{height:35px;background:#406888;}
+.pfgirl .pfh{background:radial-gradient(circle,#ffc8c8,#d88080);}
+.pfgirl .pfb{height:45px;background:linear-gradient(180deg,#d87878,#884848);}
+.polcap{font-family:'Sacramento',cursive;font-size:14px;color:#7a6050;text-align:center;padding-top:11px;}
+.pglow{position:absolute;inset:-25px;border-radius:50%;background:radial-gradient(ellipse,rgba(180,140,255,.15),transparent 70%);animation:pgf 4.5s ease-in-out infinite alternate;pointer-events:none;}
+@keyframes pgf{from{opacity:.45}to{opacity:1}}
+
+/* BROWSER / WEBSITE CHAPTER */
+#s5{background:radial-gradient(ellipse at 40% 40%,#051228 0%,#0a0820 40%,var(--bg) 100%);}
+.browser{width:100%;max-width:610px;z-index:10;}
+.bshell{background:#1e1e32;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1.5px rgba(255,255,255,.09),0 35px 90px rgba(0,0,0,.85);}
+.bbar{background:#2a2a48;padding:11px 15px;display:flex;align-items:center;gap:11px;}
+.bdots{display:flex;gap:7px;}
+.bdot{width:11px;height:11px;border-radius:50%;}
+.bdot:nth-child(1){background:#ff6f66;}.bdot:nth-child(2){background:#ffc83e;}.bdot:nth-child(3){background:#37d94f;}
+.burl{flex:1;background:rgba(255,255,255,.08);border-radius:7px;padding:6px 13px;font-size:10.5px;color:rgba(210,220,230,.6);letter-spacing:.06em;}
+.bscreen{background:linear-gradient(145deg,#0c0c1e,#0f0f24);min-height:250px;padding:0;overflow:hidden;position:relative;}
+.code-rain{position:absolute;inset:0;overflow:hidden;opacity:.09;pointer-events:none;}
+.code-col{position:absolute;top:-100%;font-family:monospace;font-size:11px;color:#00ff99;line-height:1.45;animation:codefall linear infinite;white-space:nowrap;}
+@keyframes codefall{from{top:-100%}to{top:110%}}
+.site-preview{padding:24px;display:flex;flex-direction:column;align-items:center;gap:13px;position:relative;z-index:2;}
+.site-hdr{width:100%;display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1.5px solid rgba(255,255,255,.08);}
+.site-logo{font-family:'Sacramento',cursive;font-size:20px;color:var(--rose);text-shadow:0 0 15px rgba(255,159,176,.4);}
+.site-nav{display:flex;gap:13px;}
+.site-nav span{font-size:8.5px;letter-spacing:.16em;color:rgba(210,210,230,.5);}
+.site-hero{text-align:center;padding:15px 0 7px;}
+.site-hero-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:22px;color:rgba(255,245,230,.9);margin-bottom:6px;line-height:1.35;}
+.site-hero-sub{font-size:8.5px;letter-spacing:.22em;text-transform:uppercase;color:rgba(210,200,190,.35);}
+.site-cards{display:flex;gap:9px;width:100%;}
+.site-card{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:7px;padding:11px;text-align:center;}
+.site-card-icon{font-size:15px;margin-bottom:5px;}
+.site-card-t{font-size:7.5px;color:rgba(210,200,190,.5);letter-spacing:.11em;}
+.type-cursor{display:inline-block;width:2px;height:13px;background:var(--rose);margin-left:2px;animation:blink .9s infinite;vertical-align:middle;box-shadow:0 0 8px var(--rose);}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.browser-caption{margin-top:1.6rem;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(1.05rem,2.6vw,1.3rem);color:rgba(220,200,180,.55);text-align:center;max-width:420px;line-height:2.1;z-index:10;text-shadow:0 2px 10px rgba(0,0,0,.4);}
+
+/* TIMELINE */
+#s6{background:radial-gradient(ellipse at 65% 45%,#1e0812 0%,var(--bg) 70%);}
+.tlwrap{max-width:610px;width:100%;z-index:10;}
+.tlh{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:clamp(1.9rem,5.5vw,3rem);color:var(--cream);text-align:center;margin-bottom:3.2rem;text-shadow:0 2px 15px rgba(0,0,0,.5);}
+.tltrack{position:relative;padding-left:3px;}
+.tlline{position:absolute;left:7px;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,transparent,rgba(255,159,176,.5) 15%,rgba(232,184,109,.4) 55%,rgba(255,159,176,.25) 85%,transparent);box-shadow:0 0 10px rgba(255,159,176,.3);}
+.tli{padding-left:45px;margin-bottom:3rem;position:relative;opacity:0;transform:translateX(-22px);transition:opacity .9s ease,transform .9s ease;}
+.tli.on{opacity:1;transform:none;}
+.tldot{position:absolute;left:0;top:6px;width:15px;height:15px;border-radius:50%;border:2px solid;background:var(--bg);transition:box-shadow .5s,transform .5s;}
+.tli.on .tldot{box-shadow:0 0 18px currentColor,0 0 30px currentColor;transform:scale(1.1);}
+.cr{border-color:var(--rose);color:var(--rose);}.cg{border-color:var(--gold);color:var(--gold);}.cd{border-color:#556677;color:#556677;}.cdr{border-color:#d87080;color:#d87080;}
+.tlti{font-family:'Cormorant Garamond',serif;font-size:clamp(1rem,2.6vw,1.3rem);margin-bottom:.7rem;line-height:1.35;}
+.tltx{font-size:clamp(.86rem,1.9vw,.96rem);line-height:2.05;color:var(--muted);}
+.tltx em{font-family:'Cormorant Garamond',serif;font-style:italic;color:rgba(255,159,176,.9);text-shadow:0 0 10px rgba(255,159,176,.2);}
+
+/* MISTAKE */
+#s7{background:radial-gradient(ellipse at 50% 40%,#1c050a 0%,#100408 50%,var(--bg) 100%);text-align:center;}
+.crackh{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:clamp(2.8rem,11vw,6.5rem);color:transparent;-webkit-text-stroke:1.5px rgba(220,70,70,.5);position:relative;letter-spacing:.05em;margin-bottom:.4rem;filter:drop-shadow(0 0 40px rgba(200,50,50,.3));}
+.crackh::after{content:attr(data-t);position:absolute;inset:0;background:linear-gradient(175deg,#a02020,#d03838 35%,#ff6060 55%,#a02020 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;clip-path:polygon(0 0,100% 0,100% 40%,65% 40%,65% 43%,100% 43%,100% 100%,0 100%);animation:cra 7s ease-in-out infinite alternate;}
+@keyframes cra{0%{clip-path:polygon(0 0,100% 0,100% 40%,65% 40%,65% 43%,100% 43%,100% 100%,0 100%)}100%{clip-path:polygon(0 0,100% 0,100% 36%,60% 37%,61% 41%,100% 39%,100% 100%,0 100%)}}
+.s7sub{font-size:9.5px;font-weight:100;letter-spacing:.55em;text-transform:uppercase;color:rgba(220,110,110,.45);margin-bottom:2.8rem;}
+.cards4{display:flex;flex-direction:column;gap:1.1rem;width:100%;max-width:630px;}
+.crd{background:rgba(255,255,255,.028);border:1px solid rgba(255,255,255,.065);border-radius:18px;padding:1.5rem 1.8rem;text-align:left;position:relative;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.4);}
+.crd::before{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;background:linear-gradient(90deg,transparent,var(--ac,rgba(255,255,255,.12)),transparent);}
+.crd.k{--ac:rgba(232,184,109,.5);}.crd.e{--ac:rgba(220,70,70,.5);}.crd.t{--ac:rgba(100,150,220,.5);}.crd.d{--ac:rgba(160,110,110,.4);}
+.crdico{font-size:1.5rem;margin-bottom:.6rem;filter:drop-shadow(0 2px 6px rgba(0,0,0,.4));}
+.crdt{font-family:'Cormorant Garamond',serif;font-size:clamp(1rem,2.6vw,1.2rem);margin-bottom:.5rem;}
+.crdt.gold{color:var(--gold);text-shadow:0 0 12px rgba(232,184,109,.3);}.crdt.red{color:#dd6565;text-shadow:0 0 12px rgba(221,101,101,.3);}.crdt.blue{color:#80a0cc;text-shadow:0 0 12px rgba(128,160,204,.25);}.crdt.dim{color:#8a98a9;}
+.crdp{font-size:clamp(.84rem,1.9vw,.94rem);line-height:2.05;color:var(--muted);}
+.crdp em{font-family:'Cormorant Garamond',serif;font-style:italic;color:rgba(255,159,176,.9);text-shadow:0 0 10px rgba(255,159,176,.2);}
+.candle-wrap{margin:3rem auto 0;display:flex;flex-direction:column;align-items:center;}
+.cfl{width:20px;height:35px;background:radial-gradient(ellipse at bottom,rgba(255,252,190,.9),rgba(255,180,10,.8),rgba(255,70,10,.4),transparent);border-radius:50% 50% 22% 22%;animation:cfa 2s ease-in-out infinite alternate;filter:drop-shadow(0 0 15px rgba(255,160,0,.7));}
+@keyframes cfa{0%{transform:scaleX(1) scaleY(1)}30%{transform:scaleX(.84) scaleY(1.08) skewX(2.5deg)}70%{transform:scaleX(1.12) scaleY(.92) skewX(-2.5deg)}100%{transform:scaleX(.9) scaleY(1.1)}}
+.cwi{width:2.5px;height:9px;background:linear-gradient(to bottom,#999,#444);}
+.cwt{width:22px;height:8px;background:radial-gradient(ellipse,#f2ead8,#daccb8);border-radius:50%;}
+.cbd{width:18px;height:68px;background:linear-gradient(180deg,#f8f2ea,#ead8c8,#d2c0a8);border-radius:4px;position:relative;}
+.cbd::after{content:'';position:absolute;left:4px;top:0;bottom:0;width:2.5px;background:rgba(255,255,255,.45);border-radius:3px;}
+
+/* BETRAYAL */
+#s8{background:radial-gradient(ellipse at 30% 50%,#140c06 0%,#0e0a0a 40%,var(--bg) 100%);}
+.shatter-title{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(2.2rem,9vw,5.5rem);color:transparent;-webkit-text-stroke:2px rgba(255,150,70,.6);position:relative;text-align:center;letter-spacing:.07em;filter:drop-shadow(0 0 35px rgba(255,130,50,.35));margin-bottom:2.2rem;}
+.shatter-title::after{content:attr(data-t);position:absolute;inset:0;background:linear-gradient(170deg,#ff9050,#ff6030 40%,#dd3818 70%,#982010 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;clip-path:polygon(0 0,42% 0,45% 18%,100% 15%,100% 100%,55% 100%,52% 82%,0 85%);animation:sha 5.5s ease-in-out infinite alternate;}
+@keyframes sha{0%{clip-path:polygon(0 0,42% 0,45% 18%,100% 15%,100% 100%,55% 100%,52% 82%,0 85%)}100%{clip-path:polygon(0 0,45% 0,42% 20%,100% 12%,100% 100%,58% 100%,55% 80%,0 88%)}}
+.del-label{font-size:9.5px;font-weight:100;letter-spacing:.55em;text-transform:uppercase;color:rgba(255,130,70,.45);text-align:center;margin-bottom:1.7rem;}
+.del-items{display:flex;flex-direction:column;gap:.7rem;width:100%;max-width:570px;}
+.del-item{display:flex;align-items:center;gap:13px;padding:.8rem 1.1rem;background:rgba(255,255,255,.028);border:1px solid rgba(255,90,50,.12);border-radius:9px;position:relative;overflow:hidden;transition:opacity .6s;box-shadow:0 2px 10px rgba(0,0,0,.3);}
+.del-line{position:absolute;top:50%;left:0;right:0;height:1.5px;background:rgba(255,70,50,.5);transform:scaleX(0);transform-origin:left;transition:transform 1.3s ease;box-shadow:0 0 8px rgba(255,70,50,.4);}
+.del-item.deleted .del-line{transform:scaleX(1);}
+.del-item.deleted .del-name{opacity:.22;transition:opacity .9s ease;}
+.del-icon{font-size:15px;flex-shrink:0;filter:drop-shadow(0 2px 4px rgba(0,0,0,.3));}
+.del-name{font-size:11.5px;color:rgba(230,210,190,.5);flex:1;font-weight:100;}
+.del-status{font-size:9.5px;color:rgba(255,90,70,.6);letter-spacing:.12em;text-transform:uppercase;flex-shrink:0;}
+.del-years{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(1.4rem,4.2vw,2.2rem);color:rgba(255,130,70,.5);text-align:center;margin-top:1.7rem;line-height:1.7;text-shadow:0 2px 15px rgba(255,130,70,.2);}
+
+/* SPARK LOST SECTION */
+.spark-lost{opacity:0;transform:translateY(35px);transition:opacity 1.2s ease,transform 1.2s ease;}
+.spark-lost.on{opacity:1;transform:none;}
+.fade-word{opacity:0;transform:translateY(10px);display:inline-block;transition:opacity .7s ease,transform .7s ease;}
+.fade-word.show{opacity:1;transform:none;}
+
+/* LETTER */
+#s9{background:radial-gradient(ellipse at 40% 70%,#061006 0%,var(--bg) 70%);}
+.lwrap{max-width:570px;width:100%;z-index:10;}
+.ltag{font-family:'Sacramento',cursive;font-size:1.5rem;color:rgba(232,184,109,.55);text-align:center;margin-bottom:.9rem;text-shadow:0 0 15px rgba(232,184,109,.25);}
+.paper{background:linear-gradient(168deg,#fffbf8,#faf6ea,#f7f0e2);border-radius:3px;padding:clamp(2.2rem,5vw,3.3rem) clamp(1.8rem,5vw,3.5rem);box-shadow:0 2px 4px rgba(0,0,0,.08),0 40px 100px rgba(0,0,0,.75),inset 0 0 60px rgba(210,180,140,.12);position:relative;transform:rotate(-.6deg);}
+.paper::before{content:'';position:absolute;inset:0;border-radius:3px;background-image:repeating-linear-gradient(transparent,transparent 28px,rgba(180,150,120,.12) 28px,rgba(180,150,120,.12) 29px);background-position:0 54px;pointer-events:none;}
+.paper::after{content:'';position:absolute;top:0;bottom:0;left:54px;width:1.5px;background:rgba(210,150,140,.18);}
+.pholes{position:absolute;left:20px;top:0;bottom:0;display:flex;flex-direction:column;justify-content:space-evenly;align-items:center;}
+.phole{width:9px;height:9px;border-radius:50%;background:rgba(220,205,185,.45);box-shadow:inset 0 1px 3px rgba(0,0,0,.25);}
+.smear{position:absolute;border-radius:40% 60% 50% 40%;filter:blur(6px);pointer-events:none;background:rgba(90,110,140,.08);}
+.ldate{font-size:10.5px;font-weight:200;letter-spacing:.14em;color:#b8a090;text-align:right;margin-bottom:2rem;}
+.ldear{font-family:'Sacramento',cursive;font-size:2rem;color:#422818;margin-bottom:1.4rem;line-height:1;}
+.ltext{font-family:'Cormorant Garamond',serif;font-size:clamp(.9rem,2vw,1rem);line-height:2.3;color:#442818;position:relative;z-index:1;}
+.ltext em{font-style:italic;color:#6a3828;}
+.ltext .big{font-size:1.15em;font-weight:600;color:#281010;}
+.lb{display:block;height:.75rem;}
+.lsign{font-family:'Sacramento',cursive;font-size:2.2rem;color:#422818;text-align:right;margin-top:.9rem;line-height:1;}
+.lsigns{font-size:9.5px;font-weight:200;letter-spacing:.2em;color:#b8a090;text-align:right;margin-top:6px;}
+
+/* ENDING */
+#s10{position:relative;min-height:100vh;display:block;overflow:hidden;opacity:0;transform:translateY(35px);transition:opacity 1.6s cubic-bezier(.22,1,.36,1),transform 1.6s cubic-bezier(.22,1,.36,1);}
+#s10.on{opacity:1;transform:none;}
+#cv-end{position:absolute;inset:0;width:100%;height:100%;z-index:0;}
+.end-inner{position:relative;z-index:10;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:90px 26px 70px;text-align:center;}
+.end-eye{font-size:9.5px;font-weight:100;letter-spacing:.6em;text-transform:uppercase;color:rgba(232,184,109,.5);margin-bottom:2.8rem;opacity:0;transition:opacity 1.2s .3s ease;text-shadow:0 0 15px rgba(232,184,109,.25);}
+.end-big{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:clamp(3.3rem,10vw,7.5rem);line-height:.88;background:linear-gradient(170deg,#f0e0d0,#dcb898 38%,#c09868 70%,#a88058 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;opacity:0;margin-bottom:.5rem;transition:opacity 1.2s .7s ease;filter:drop-shadow(0 0 25px rgba(220,160,120,.2));}
+.end-big2{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(1.5rem,5.5vw,3.3rem);color:rgba(210,190,160,.5);opacity:0;margin-bottom:3.8rem;transition:opacity 1.2s 1.1s ease;text-shadow:0 0 20px rgba(210,190,160,.2);}
+.lrow{display:flex;align-items:center;gap:2rem;margin-bottom:3.8rem;opacity:0;transition:opacity 1.2s 1.5s ease;}
+.lrow::before,.lrow::after{content:'';width:60px;height:1.5px;background:linear-gradient(90deg,transparent,rgba(232,184,109,.45));}
+.lrow::after{background:linear-gradient(90deg,rgba(232,184,109,.45),transparent);}
+.lico{font-size:2rem;filter:drop-shadow(0 0 20px rgba(255,170,70,.75));animation:lsw 4s ease-in-out infinite;}
+.lico:nth-child(2){animation-delay:.9s;font-size:1.4rem;}.lico:nth-child(4){animation-delay:1.8s;font-size:1.4rem;}
+@keyframes lsw{0%,100%{transform:rotate(-8deg) translateY(0)}50%{transform:rotate(8deg) translateY(-10px)}}
+.poem{max-width:560px;margin:0 auto 3.8rem;opacity:0;transition:opacity .6s 1.7s ease;}
+.pl{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:clamp(1.1rem,3.2vw,1.65rem);color:rgba(255,245,230,.82);line-height:2;opacity:0;transform:translateY(14px);transition:opacity 1s ease,transform 1s ease;text-shadow:0 2px 12px rgba(0,0,0,.4);}
+.pl.s{opacity:1;transform:none;}
+.psp{height:1.2rem;display:block;}
+.pg{color:rgba(232,184,109,.82)!important;text-shadow:0 0 15px rgba(232,184,109,.25);}
+.pr{color:rgba(255,159,176,.75)!important;text-shadow:0 0 15px rgba(255,159,176,.25);}
+.truths{max-width:510px;width:100%;margin:0 auto;opacity:0;transition:opacity 1.2s .3s ease;}
+.tlbl{font-size:9px;font-weight:100;letter-spacing:.55em;text-transform:uppercase;color:rgba(232,184,109,.35);text-align:center;margin-bottom:2.2rem;}
+.truth{display:flex;align-items:flex-start;gap:1.3rem;margin-bottom:1.8rem;opacity:0;transform:translateX(-22px);transition:opacity .9s ease,transform .9s ease;}
+.truth.s{opacity:1;transform:none;}
+.tnum{width:28px;height:28px;border-radius:50%;border:1.5px solid rgba(232,184,109,.45);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:12px;color:rgba(232,184,109,.75);box-shadow:0 0 12px rgba(232,184,109,.2);}
+.ttxt{font-size:clamp(.84rem,1.9vw,.94rem);line-height:2.1;color:rgba(225,210,195,.6);padding-top:4px;}
+.endfinal{margin-top:4.5rem;opacity:0;transition:opacity 1.2s .4s ease;display:flex;flex-direction:column;align-items:center;gap:1.2rem;}
+.evline{width:1.5px;height:65px;background:linear-gradient(to bottom,rgba(232,184,109,.6),transparent);box-shadow:0 0 8px rgba(232,184,109,.3);}
+.escript{font-family:'Sacramento',cursive;font-size:clamp(2.4rem,7.5vw,4.3rem);color:rgba(255,245,230,.75);text-shadow:0 0 60px rgba(230,190,140,.35);line-height:1.15;}
+.esmall{font-size:9px;font-weight:100;letter-spacing:.4em;text-transform:uppercase;color:rgba(210,195,180,.25);line-height:2.6;}
+#s10.on .end-eye,#s10.on .end-big,#s10.on .end-big2,#s10.on .lrow,#s10.on .poem,#s10.on .truths,#s10.on .endfinal{opacity:1;}
+
+@media(max-width:480px){.gcard{padding:1.8rem 1.5rem;}.paper{padding:2rem 1.7rem;}.phone{width:270px;}.ndots{display:none;}}
+</style>
+</head>
+<body>
+<div id="cur"></div><div id="cur2"></div>
+<canvas id="cv-rain"></canvas><canvas id="cv-petal"></canvas>
+<div class="vignette"></div>
+<div class="prog-wrap"><div class="prog" id="prog"></div></div>
+
+<nav class="ndots" id="ndots">
+  <div class="nd on" data-t="s1"></div>
+  <div class="nd" data-t="s2"></div>
+  <div class="nd" data-t="s3"></div>
+  <div class="nd" data-t="s4"></div>
+  <div class="nd" data-t="s5"></div>
+  <div class="nd" data-t="s6"></div>
+  <div class="nd" data-t="s7"></div>
+  <div class="nd" data-t="s8"></div>
+  <div class="nd" data-t="s9"></div>
+  <div class="nd" data-t="s10"></div>
+</nav>
+
+<!-- S1 COVER -->
+<section class="scene" id="s1">
+  <canvas id="cv-cover" style="position:absolute;inset:0;z-index:0;width:100%;height:100%;"></canvas>
+  <div class="orb" style="width:400px;height:400px;background:rgba(140,50,120,.22);top:-100px;left:-100px;animation-duration:9s;"></div>
+  <div class="orb" style="width:300px;height:300px;background:rgba(50,70,170,.18);bottom:-80px;right:-80px;animation-duration:12s;animation-delay:2.5s;"></div>
+  <div class="cover-inner">
+    <div class="c-pre">Class XI &nbsp;·&nbsp; A True Story &nbsp;·&nbsp; India</div>
+    <h1 class="c-t1">One-Sided<br><span class="c-amp">&amp; Still Real</span></h1>
+    <div class="c-rule"><span>✦</span></div>
+    <p class="c-sub">A boy. A girl. Six months of hope.<br>A website built from love. A photograph.<br>A betrayal by friends. Three years deleted.<br>And the long road back to himself.</p>
+    <div class="c-scroll"><span>Scroll to begin</span><div class="c-sline"></div></div>
+  </div>
+</section>
+
+<!-- S2 FRIENDSHIP -->
+<section class="scene" id="s2">
+  <p class="eyebrow">Chapter I &nbsp;·&nbsp; How It Began</p>
+  <div class="gcard">
+    <h2 class="ch">Two Strangers<br>in the Same Classroom</h2>
+    <p class="cp">It started the way most things do — quietly, by accident. <em>Class 11.</em> The same tiled corridors, the same worn-out benches, the same nervous hum of teenagers figuring out who they were going to be.</p>
+    <p class="cp">He noticed her the way you notice a song drifting from a room you didn't expect to find music in. She laughed at something a friend said and he found himself listening to the laugh instead of the joke. <em>He didn't know it yet — but she was already becoming everything.</em></p>
+    <div class="bench-scene">
+      <div class="heart-float">🩷</div>
+      <div class="fig boy"><div class="fh"></div><div class="fn"></div><div class="fb"></div><div class="fl"><div class="fleg"></div><div class="fleg"></div></div><div class="fname">Him</div></div>
+      <div class="bplank"></div>
+      <div class="fig girl"><div class="fh"></div><div class="fn"></div><div class="fb"></div><div class="fl"><div class="fleg"></div><div class="fleg"></div></div><div class="fname">Her</div></div>
+    </div>
+    <p class="cp">They became <strong>friends</strong> — the kind built in late-night conversations. Family problems. Private fears. Secrets that only feel safe when given to someone who holds them carefully.</p>
+    <p class="cp">He was there for her every time she needed it. She was warm, grateful, present.<br><em>But they were not reading the same story.</em></p>
+  </div>
+</section>
+
+<!-- S3 WHATSAPP -->
+<section class="scene" id="s3">
+  <p class="eyebrow">Chapter II &nbsp;·&nbsp; The Blue Ticks</p>
+  <div class="phone">
+    <div class="pshell"><div class="pnotch"></div>
+      <div class="pscreen">
+        <div class="wabar"><div style="font-size:17px;color:rgba(255,255,255,.65);margin-right:3px;">‹</div><div class="waav">🌸</div><div><div class="wanm">Her</div><div class="wast">online</div></div><div style="margin-left:auto;font-size:19px;color:rgba(255,255,255,.55);">⋮</div></div>
+        <div class="waarea" id="chat">
+          <div class="chip">An evening in Class 11</div>
+          <div class="bbl out"><span>hey you seemed quiet today. everything okay?</span><span class="bblt">8:38 PM ✓✓</span></div>
+          <div class="bbl in"><span>family stuff again 😔 you know how it is</span><span class="bblt">8:40 PM</span></div>
+          <div class="bbl out"><span>same at my place. wanna talk about it?</span><span class="bblt">8:41 PM ✓✓</span></div>
+          <div class="bbl in"><span>somehow it feels lighter when i talk to you</span><span class="bblt">9:03 PM</span></div>
+          <div class="bbl out"><span>i think about us sometimes. like... the future 🙂</span><span class="bblt">10:14 PM ✓✓</span></div>
+          <div class="bbl in"><span>haha stop 😄 let's survive exams first okay</span><span class="bblt">10:16 PM</span></div>
+          <div class="bbl out"><span>yeah. yeah of course. goodnight 🌙</span><span class="bblt">10:17 PM ✓</span></div>
+          <div class="tdots" id="tdots"><div class="td"></div><div class="td"></div><div class="td"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="wa-note">He read every reply twice, searching for signs.<br>She replied because he was kind.<br><em>They were not reading the same conversation.</em></p>
+</section>
+
+<!-- S4 FAREWELL PHOTO -->
+<section class="scene" id="s4">
+  <p class="eyebrow">Chapter III &nbsp;·&nbsp; The Photograph</p>
+  <div class="pstage">
+    <div class="pglow"></div>
+    <div class="polaroid">
+      <div class="polimg">
+        <div class="bk" style="width:44px;height:44px;background:rgba(255,200,90,.25);top:16%;left:12%;animation-duration:3.2s;"></div>
+        <div class="bk" style="width:30px;height:30px;background:rgba(190,140,255,.25);top:24%;right:14%;animation-duration:4.2s;animation-delay:1.1s;"></div>
+        <div class="bk" style="width:18px;height:18px;background:rgba(110,190,255,.22);top:46%;left:56%;animation-duration:2.7s;animation-delay:.6s;"></div>
+        <div class="pfigs">
+          <div class="pf pfboy"><div class="pfh"></div><div class="pfb" style="height:35px;"></div></div>
+          <div class="pf pfgirl"><div class="pfh"></div><div class="pfb" style="height:45px;"></div></div>
+        </div>
+      </div>
+      <div class="polcap">Farewell Night ✨</div>
+    </div>
+  </div>
+  <div class="gcard" style="max-width:510px;text-align:center;">
+    <h2 class="ch">The Night of Fairy Lights</h2>
+    <p class="cp">Class 12's farewell. Fairy lights across the ceiling. Everyone slightly overdressed. They stood together for a photo — <em>just classmates, just a moment.</em></p>
+    <p class="cp">But he kept it. He studied it. Her smile. The light in her eyes.<br><em>He made it mean something it was never meant to mean.</em></p>
+    <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(1.05rem,2.6vw,1.4rem);color:rgba(190,160,230,.5);margin-top:1.4rem;line-height:1.85;text-shadow:0 0 15px rgba(190,160,230,.2);">"Love is the world's most honest feeling<br>— and its most talented fiction writer."</p>
+  </div>
+</section>
+
+<!-- S5 THE WEBSITE -->
+<section class="scene" id="s5">
+  <p class="eyebrow">Chapter IV &nbsp;·&nbsp; What He Built</p>
+  <div class="browser">
+    <div class="bshell">
+      <div class="bbar">
+        <div class="bdots"><div class="bdot"></div><div class="bdot"></div><div class="bdot"></div></div>
+        <div class="burl">💝 &nbsp;made-for-her.vercel.app &nbsp;<span class="type-cursor"></span></div>
+      </div>
+      <div class="bscreen">
+        <div class="code-rain" id="coderain"></div>
+        <div class="site-preview">
+          <div class="site-hdr">
+            <div class="site-logo">For Her 🌸</div>
+            <div class="site-nav"><span>Home</span><span>Gallery</span><span>About</span></div>
+          </div>
+          <div class="site-hero">
+            <div class="site-hero-title">Built with every skill I have,<br>for someone I admire</div>
+            <div class="site-hero-sub" style="margin-top:6px;">— a gift made from lines of code and a full heart —</div>
+          </div>
+          <div class="site-cards">
+            <div class="site-card"><div class="site-card-icon">🎨</div><div class="site-card-t">Custom Design</div></div>
+            <div class="site-card"><div class="site-card-icon">⚡</div><div class="site-card-t">Live &amp; Real</div></div>
+            <div class="site-card"><div class="site-card-icon">🤖</div><div class="site-card-t">AI Powered</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="browser-caption">
+    1–2 days before the farewell. He didn't buy flowers.<br>
+    He didn't write a note. <em>He opened his laptop and built her a world.</em><br><br>
+    She liked it. She genuinely liked it.<br><br>
+    <em style="color:rgba(210,170,130,.5);">But when you're the wrong person —<br>even your greatest effort disappears like it never existed.</em>
+  </p>
+</section>
+
+<!-- S6 REJECTION -->
+<section class="scene" id="s6">
+  <p class="eyebrow">Chapter V &nbsp;·&nbsp; What Was Said</p>
+  <div class="tlwrap">
+    <h2 class="tlh">The Messages That<br>Changed Everything</h2>
+    <div class="tltrack">
+      <div class="tlline"></div>
+      <div class="tli" id="t1"><div class="tldot cr"></div><div class="tlti cr">The Next Morning — She Texted First</div><p class="tltx">She was kind about it. Direct and thoughtful. Her family was strict, her focus was her future. Love wasn't something she had space for.</p><div class="qpill qr">"I don't have any interest in these things. You deserve better."</div></div>
+      <div class="tli" id="t2"><div class="tldot cg"></div><div class="tlti cg">He Replied With Everything He Had</div><p class="tltx">He didn't get angry. He didn't plead. He just told her the truth — <em>the simplest, most devastating truth a person can tell.</em></p><div class="qpill qg">"I don't want someone better. I don't want someone worse. I only want you."</div></div>
+      <div class="tli" id="t3"><div class="tldot cd"></div><div class="tlti cd">Her Final Reply</div><p class="tltx">She left him with words meant to be gentle — that landed like a door quietly closing.</p><div class="qpill qd">"Let's just focus on studies for now."</div><p class="tltx" style="margin-top:.9rem;"><em>And then the texts stopped. Not from cruelty. From clarity.</em></p></div>
+      <div class="tli" id="t4"><div class="tldot cdr"></div><div class="tlti cdr">He Never Stopped Hoping</div><p class="tltx">He kept the photograph. He told himself: <em>one day she'll feel it too.</em> He was wrong. But he wasn't broken. He was just completely, helplessly, <em>in love.</em></p></div>
+    </div>
+  </div>
+</section>
+
+<!-- S7 THE MISTAKE -->
+<section class="scene" id="s7">
+  <p class="eyebrow">Chapter VI &nbsp;·&nbsp; The Day It Broke</p>
+  <div class="crackh" data-t="His Birthday">His Birthday</div>
+  <p class="s7sub">The day goodness and a terrible mistake lived side by side</p>
+  <div class="cards4">
+    <div class="crd k"><div class="crdico">🍱</div><div class="crdt gold">What He Did Right</div><p class="crdp">On his birthday, he fed homeless children. Bought food with his own money. Sat with them. Made sure they had enough. <em>Quiet, selfless — born from a heart trying to find meaning inside its own grief.</em></p></div>
+    <div class="crd e"><div class="crdico">📸</div><div class="crdt red">What He Did Wrong</div><p class="crdp">He shared the farewell photograph publicly. Without asking her. Without thinking about what it meant to her, her family, the private world she had carefully built. <em>One impulsive decision. Everything collapsed.</em></p></div>
+    <div class="crd t"><div class="crdico">💧</div><div class="crdt blue">She Cried</div><p class="crdp">When she found out, she cried. Not from hate — but because her privacy had been broken by someone she thought understood her.</p><div class="qpill qb" style="margin-top:.9rem;">"I will never forgive you. I never want to hear your name."</div></div>
+    <div class="crd d"><div class="crdico">🌑</div><div class="crdt dim">What Happened to Him</div><p class="crdp">Those words were the heaviest thing he'd ever carried. That night, alone, <em>he hurt himself.</em> A blade. Blood. A boy drowning in guilt too large for his age. He survived. But something went very dark.</p></div>
+  </div>
+  <div class="candle-wrap"><div class="cfl"></div><div class="cwi"></div><div class="cwt"></div><div class="cbd"></div></div>
+</section>
+
+<!-- S8 BETRAYAL + DELETED FILES -->
+<section class="scene" id="s8">
+  <p class="eyebrow">Chapter VII &nbsp;·&nbsp; The Betrayal</p>
+  <div class="shatter-title" data-t="By His Own Friends" style="z-index:10;">By His Own Friends</div>
+
+  <div class="gcard" style="max-width:610px;margin-bottom:2.2rem;">
+    <h2 class="ch" style="color:rgba(255,160,100,.8);">They Were Supposed to Be His People</h2>
+    <p class="cp">While she was crying, her friends came to comfort her. And in that room, they told her something that changed everything permanently.</p>
+    <p class="cp"><em>They told her he would misuse the photograph.</em> That he knew AI. That he could do anything with technology. That she should be afraid of what he was capable of.</p>
+    <p class="cp">These were not strangers. <strong>These were also his friends.</strong> People he had sat beside in the same corridors for years. People he had trusted.</p>
+    <p class="cp">In one moment, they took the very skill he had used to <em>show her love</em> — the website he built, the AI he had spent years learning — and turned it into a weapon against his character. In front of her. While she was already crying.</p>
+    <p class="cp" style="color:rgba(255,160,100,.65);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.08em;margin-top:1.1rem;text-shadow:0 0 15px rgba(255,160,100,.2);">Rejection hurts. But betrayal by your own people breaks something deeper — something that takes much longer to heal.</p>
+  </div>
+
+  <div style="width:100%;max-width:570px;z-index:10;">
+    <div class="del-label">What he did that same night — 3 years of work</div>
+    <div class="del-items" id="delitems">
+      <div class="del-item" data-delay="200"><div class="del-line"></div><div class="del-icon">💝</div><div class="del-name">her-website-final.html &nbsp;·&nbsp; built with love, 2 days before farewell</div><div class="del-status">Deleted</div></div>
+      <div class="del-item" data-delay="800"><div class="del-line"></div><div class="del-icon">🌐</div><div class="del-name">portfolio-website-v3 &nbsp;·&nbsp; 8 months of building</div><div class="del-status">Deleted</div></div>
+      <div class="del-item" data-delay="1400"><div class="del-line"></div><div class="del-icon">🤖</div><div class="del-name">ai-image-generator &nbsp;·&nbsp; 6 months of learning</div><div class="del-status">Deleted</div></div>
+      <div class="del-item" data-delay="2000"><div class="del-line"></div><div class="del-icon">⚙️</div><div class="del-name">first-fullstack-app &nbsp;·&nbsp; a year of effort</div><div class="del-status">Deleted</div></div>
+      <div class="del-item" data-delay="2600"><div class="del-line"></div><div class="del-icon">✨</div><div class="del-name">everything-i-ever-made.zip &nbsp;·&nbsp; 3 years total</div><div class="del-status">Deleted</div></div>
+    </div>
+    <div class="del-years">Three years.<br><em>Erased in one night of pain.</em></div>
+  </div>
+
+  <div class="gcard spark-lost" id="sparkLost" style="max-width:590px;margin-top:2.8rem;border-color:rgba(70,90,110,.2);">
+    <h2 class="ch" style="color:rgba(150,170,190,.7);">The Spark That Died</h2>
+    <p class="cp" id="sparkText1">
+      <span class="fade-word">He</span>
+      <span class="fade-word">doesn't</span>
+      <span class="fade-word">code</span>
+      <span class="fade-word">anymore.</span>
+      <span class="fade-word">Not</span>
+      <span class="fade-word">because</span>
+      <span class="fade-word">he</span>
+      <span class="fade-word">forgot</span>
+      <span class="fade-word">how</span>
+      <span class="fade-word">—</span>
+      <span class="fade-word">but</span>
+      <span class="fade-word">because</span>
+      <span class="fade-word">opening</span>
+      <span class="fade-word">a</span>
+      <span class="fade-word">laptop</span>
+      <span class="fade-word">feels</span>
+      <span class="fade-word">like</span>
+      <span class="fade-word">opening</span>
+      <span class="fade-word">a</span>
+      <span class="fade-word">wound.</span>
+      <span class="fade-word">The</span>
+      <span class="fade-word">boy</span>
+      <span class="fade-word">who</span>
+      <span class="fade-word">used</span>
+      <span class="fade-word">to</span>
+      <span class="fade-word">see</span>
+      <span class="fade-word">the</span>
+      <span class="fade-word">world</span>
+      <span class="fade-word">as</span>
+      <span class="fade-word">something</span>
+      <span class="fade-word">he</span>
+      <span class="fade-word">could</span>
+      <span class="fade-word">build</span>
+      <span class="fade-word">and</span>
+      <span class="fade-word">improve</span>
+      <span class="fade-word">now</span>
+      <span class="fade-word">sees</span>
+      <span class="fade-word">it</span>
+      <span class="fade-word">as</span>
+      <span class="fade-word">something</span>
+      <span class="fade-word">that</span>
+      <span class="fade-word">punishes</span>
+      <span class="fade-word">you</span>
+      <span class="fade-word">for</span>
+      <span class="fade-word">trying.</span>
+    </p>
+    <p class="cp" id="sparkText2">
+      <em class="fade-word">He</em>
+      <em class="fade-word">doesn't</em>
+      <em class="fade-word">trust</em>
+      <em class="fade-word">people</em>
+      <em class="fade-word">anymore.</em>
+      <span class="fade-word">Not</span>
+      <span class="fade-word">his</span>
+      <span class="fade-word">classmates.</span>
+      <span class="fade-word">Not</span>
+      <span class="fade-word">his</span>
+      <span class="fade-word">friends.</span>
+      <span class="fade-word">Not</span>
+      <span class="fade-word">even</span>
+      <span class="fade-word">the</span>
+      <span class="fade-word">parts</span>
+      <span class="fade-word">of</span>
+      <span class="fade-word">himself</span>
+      <span class="fade-word">that</span>
+      <span class="fade-word">used</span>
+      <span class="fade-word">to</span>
+      <span class="fade-word">believe</span>
+      <span class="fade-word">in</span>
+      <span class="fade-word">goodness.</span>
+      <span class="fade-word">Every</span>
+      <span class="fade-word">conversation</span>
+      <span class="fade-word">feels</span>
+      <span class="fade-word">like</span>
+      <span class="fade-word">a</span>
+      <span class="fade-word">performance.</span>
+      <span class="fade-word">Every</span>
+      <span class="fade-word">kindness</span>
+      <span class="fade-word">feels</span>
+      <span class="fade-word">like</span>
+      <span class="fade-word">a</span>
+      <span class="fade-word">trap</span>
+      <span class="fade-word">waiting</span>
+      <span class="fade-word">to</span>
+      <span class="fade-word">spring.</span>
+    </p>
+    <p class="cp" id="sparkText3" style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.08em;color:rgba(170,190,210,.6);margin-top:1.1rem;text-shadow:0 0 15px rgba(170,190,210,.15);">
+      <span class="fade-word">The</span>
+      <span class="fade-word">worst</span>
+      <span class="fade-word">part</span>
+      <span class="fade-word">isn't</span>
+      <span class="fade-word">the</span>
+      <span class="fade-word">pain.</span><br>
+      <span class="fade-word">It's</span>
+      <span class="fade-word">the</span>
+      <span class="fade-word">numbness</span>
+      <span class="fade-word">that</span>
+      <span class="fade-word">came</span>
+      <span class="fade-word">after.</span><br>
+      <span class="fade-word">The</span>
+      <span class="fade-word">feeling</span>
+      <span class="fade-word">that</span>
+      <span class="fade-word">nothing</span>
+      <span class="fade-word">will</span>
+      <span class="fade-word">ever</span>
+      <span class="fade-word">matter</span>
+      <span class="fade-word">again.</span>
+    </p>
+  </div>
+
+  <div class="gcard" style="max-width:590px;margin-top:1.7rem;border-color:rgba(255,110,70,.15);">
+    <p class="cp" style="color:rgba(240,190,160,.7);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(1.05rem,2.6vw,1.2rem);line-height:2.1;text-align:center;">He didn't just lose the girl.<br>He didn't just lose the friends.<br><em>He deleted himself.</em><br><br>The boy who stayed up late teaching himself to code.<br>Who figured out AI when no one his age was even looking.<br>Who built a whole website for someone he loved —<br>because creation was his love language.<br><br>That boy erased three years of himself in one night.<br>And now he sits somewhere, <em>scared of his own hands.</em><br>Unable to trust anyone. Unable to open a laptop<br>without hearing their words echo back.</p>
+  </div>
+</section>
+
+<!-- S9 THE LETTER -->
+<section class="scene" id="s9">
+  <p class="eyebrow">Chapter VIII &nbsp;·&nbsp; What He Needs to Say</p>
+  <div class="lwrap">
+    <div class="ltag">A letter that was never sent</div>
+    <div class="paper">
+      <div class="pholes"><div class="phole"></div><div class="phole"></div><div class="phole"></div></div>
+      <div class="smear" style="width:40px;height:22px;top:36%;left:16%;transform:rotate(-8deg);"></div>
+      <div class="smear" style="width:24px;height:16px;top:56%;right:10%;transform:rotate(5deg);"></div>
+      <div class="smear" style="width:16px;height:12px;top:71%;left:32%;transform:rotate(-3deg);"></div>
+      <div class="ldate">Class 11 &nbsp;·&nbsp; Never delivered</div>
+      <div class="ldear">To her,</div>
+      <div class="ltext">
+        I know you've heard I've moved on.<br>
+        <em>I haven't. Not yet. And I'm not asking you to care about that.</em>
+        <span class="lb"></span>
+        What I did — sharing our photograph without asking you — was wrong. Not wrong because I got in trouble. Wrong because it was <em>your</em> image, <em>your</em> privacy, <em>your</em> trust, and I broke all three in one thoughtless, lonely moment.
+        <span class="lb"></span>
+        And I know what your friends said. That I know AI. That I could misuse it. That I was dangerous. I understand why they said it. I understand why it made sense to you in that moment.
+        <span class="lb"></span>
+        But I want to tell you something true: <em>I built things to create, never to harm. The website I made for you — two days before the farewell — I made it because building things is the only language I know to say "I see you, and I care."</em>
+        <span class="lb"></span>
+        I deleted it all that night. Every project. Three years of work. Not because I was asked to. Because I couldn't stand the thought of you being afraid of something I made with love.
+        <span class="lb"></span>
+        <span class="big">I am sorry.</span>
+        <span class="lb"></span>
+        I'm sorry for making you cry.<br>
+        I'm sorry for sharing your image without asking.<br>
+        I'm sorry that the thing I used to show you love became the thing that scared you.<br>
+        I'm sorry for all of it — even the parts that weren't entirely my fault.
+        <span class="lb"></span>
+        <em>I only want five minutes. Face to face. To say this out loud, so I can stop carrying it everywhere I go.</em>
+        <span class="lb"></span>
+        After that, I will leave. Quietly. For good.<br>
+        <em>And I will rebuild — slower this time, and only for myself.</em>
+      </div>
+      <div class="lsign">Him</div>
+      <div class="lsigns">The boy who built worlds and forgot to protect yours</div>
+    </div>
+  </div>
+</section>
+
+<!-- S10 ENDING -->
+<section id="s10">
+  <canvas id="cv-end"></canvas>
+  <div class="end-inner">
+    <p class="end-eye">Epilogue &nbsp;·&nbsp; The Last Page</p>
+    <div class="end-big">He Will</div>
+    <div class="end-big2">build again.</div>
+    <div class="lrow"><span class="lico">🏮</span><span class="lico">🏮</span><span class="lico">🏮</span></div>
+
+    <div class="poem" id="poem">
+      <div class="pl">He was just a boy who loved someone</div>
+      <div class="pl">with his whole chest —</div>
+      <div class="pl">who built worlds from lines of code</div>
+      <div class="pl">because it was the only way he knew</div>
+      <div class="pl">to say &nbsp;<em style="font-family:'Cormorant Garamond',serif;">"I see you."</em></div>
+      <span class="psp"></span>
+      <div class="pl pr">They took his greatest gift</div>
+      <div class="pl pr">and made her afraid of it.</div>
+      <div class="pl pr">And he — in the depths of his grief —</div>
+      <div class="pl pr">deleted three years of himself</div>
+      <div class="pl pr">just to prove he was safe.</div>
+      <span class="psp"></span>
+      <div class="pl pg">"No mistake, however terrible,</div>
+      <div class="pl pg">can delete who you truly are.</div>
+      <div class="pl pg">Only you can do that.</div>
+      <div class="pl pg">And only you can rebuild."</div>
+    </div>
+
+    <div class="truths" id="truths">
+      <div class="tlbl">What he needs to know now</div>
+      <div class="truth"><div class="tnum">1</div><div class="ttxt">Her "no" was not a verdict on his worth. It was honesty — the kindest thing she could have given him.</div></div>
+      <div class="truth"><div class="tnum" style="border-color:rgba(255,159,176,.5);color:rgba(255,159,176,.75);">2</div><div class="ttxt">What those friends said was cruel and untrue. His skills were never a weapon. They were always a love language. Always.</div></div>
+      <div class="truth"><div class="tnum" style="border-color:rgba(110,190,130,.45);color:rgba(110,190,130,.7);">3</div><div class="ttxt">Deleting three years does not make him safer or better. It only makes him smaller. The work was never the problem — and it deserves to be rebuilt.</div></div>
+      <div class="truth"><div class="tnum" style="border-color:rgba(170,150,220,.45);color:rgba(170,150,220,.7);">4</div><div class="ttxt">A blade and a cigarette will never carry this weight. He needs a real person — a counsellor, a trusted adult — someone who can actually sit with him in it.</div></div>
+      <div class="truth"><div class="tnum" style="border-color:rgba(255,208,170,.55);color:rgba(255,208,170,.85);">5</div><div class="ttxt">One day he will open a laptop again. He will build something extraordinary — not for anyone else, just for the joy of making. That day is coming.</div></div>
+    </div>
+
+    <div class="endfinal" id="endfinal">
+      <div class="evline"></div>
+      <div class="escript">This story is not over.</div>
+      <div class="esmall">He deleted three years.<br>He still has a whole life left to fill with code, with love,<br>with things only he can make.</div>
+      <div style="margin-top:3.3rem;font-size:9px;font-weight:100;letter-spacing:.45em;text-transform:uppercase;color:rgba(220,205,190,.12);">Made with honesty · for someone real · 2026</div>
+    </div>
+  </div>
+</section>
+
+<script>
+/* CURSOR */
+const cur=document.getElementById('cur'),cur2=document.getElementById('cur2');
+let cx=0,cy=0,tx=0,ty=0;
+document.addEventListener('mousemove',e=>{cx=e.clientX;cy=e.clientY;});
+(function lc(){tx+=(cx-tx)*.13;ty+=(cy-ty)*.13;cur.style.left=cx+'px';cur.style.top=cy+'px';cur2.style.left=tx+'px';cur2.style.top=ty+'px';requestAnimationFrame(lc);})();
+
+/* RAIN */
+const rc=document.getElementById('cv-rain'),rctx=rc.getContext('2d');
+function rrs(){rc.width=innerWidth;rc.height=innerHeight;}rrs();window.addEventListener('resize',rrs);
+class R{constructor(){this.re();}re(){this.x=Math.random()*innerWidth;this.y=Math.random()*innerHeight-innerHeight;this.l=Math.random()*20+10;this.s=Math.random()*10+6;this.a=Math.random()*.3+.06;this.w=Math.random()*.8+.3;}
+dr(){rctx.beginPath();rctx.moveTo(this.x,this.y);rctx.lineTo(this.x-1.2,this.y+this.l);rctx.strokeStyle=`rgba(180,210,240,${this.a})`;rctx.lineWidth=this.w;rctx.stroke();this.y+=this.s;if(this.y>innerHeight+25)this.re();}}
+const rain=Array.from({length:250},()=>new R());
+(function lr(){rctx.clearRect(0,0,innerWidth,innerHeight);rain.forEach(d=>d.dr());requestAnimationFrame(lr);})();
+
+/* PETALS */
+const pcc=document.getElementById('cv-petal'),pctx=pcc.getContext('2d');
+function prs(){pcc.width=innerWidth;pcc.height=innerHeight;}prs();window.addEventListener('resize',prs);
+class P{constructor(){this.re(true);}re(i=false){this.x=Math.random()*innerWidth;this.y=i?Math.random()*innerHeight:-25;this.sz=Math.random()*10+5;this.sp=Math.random()*.8+.3;this.dx=(Math.random()-.5)*.6;this.rot=Math.random()*Math.PI*2;this.rs=(Math.random()-.5)*.05;this.a=Math.random()*.4+.1;this.h=Math.random()<.65?340:20;}
+dr(){pctx.save();pctx.translate(this.x,this.y);pctx.rotate(this.rot);pctx.beginPath();pctx.ellipse(0,0,this.sz,this.sz*.45,0,0,Math.PI*2);pctx.fillStyle=`hsla(${this.h},75%,85%,${this.a})`;pctx.fill();pctx.restore();this.x+=this.dx+Math.sin(this.y*.014)*.4;this.y+=this.sp;this.rot+=this.rs;if(this.y>innerHeight+25)this.re();}}
+const ptls=Array.from({length:32},()=>new P());
+(function lp(){pctx.clearRect(0,0,innerWidth,innerHeight);ptls.forEach(p=>p.dr());requestAnimationFrame(lp);})();
+
+/* COVER STARS */
+const ccv=document.getElementById('cv-cover'),cctx=ccv.getContext('2d');
+function crs(){ccv.width=ccv.offsetWidth;ccv.height=ccv.offsetHeight;}crs();window.addEventListener('resize',crs);
+const cStars=Array.from({length:120},()=>({x:Math.random(),y:Math.random()*.9,r:Math.random()*1.8+.4,a:Math.random()*.8+.15,sp:Math.random()*.02+.005,ph:Math.random()*Math.PI*2}));
+(function cls(){cctx.clearRect(0,0,ccv.width,ccv.height);cStars.forEach(s=>{s.ph+=s.sp;const a=s.a*(.45+Math.sin(s.ph)*.55);cctx.beginPath();cctx.arc(s.x*ccv.width,s.y*ccv.height,s.r,0,Math.PI*2);cctx.fillStyle=`rgba(255,255,255,${a})`;cctx.shadowBlur=8;cctx.shadowColor=`rgba(255,255,255,${a*.4})`;cctx.fill();cctx.shadowBlur=0;});requestAnimationFrame(cls);})();
+
+/* CODE RAIN */
+const crEl=document.getElementById('coderain');
+if(crEl){const chars='01アイウエオ</>{}const let fn=>'.split('');
+for(let i=0;i<13;i++){const col=document.createElement('div');col.className='code-col';col.style.left=(i*8.3)+'%';col.style.animationDuration=(3.2+Math.random()*5.5)+'s';col.style.animationDelay=(-Math.random()*9)+'s';let t='';for(let j=0;j<32;j++)t+=chars[Math.floor(Math.random()*chars.length)]+'<br>';col.innerHTML=t;crEl.appendChild(col);}}
+
+/* ENDING CANVAS */
+const ecv=document.getElementById('cv-end'),ectx=ecv.getContext('2d');
+function ers(){ecv.width=ecv.offsetWidth;ecv.height=ecv.offsetHeight;}ers();window.addEventListener('resize',ers);
+const eStars=Array.from({length:220},()=>({x:Math.random(),y:Math.random()*.82,r:Math.random()*1.8+.4,a:Math.random()*.8+.15,sp:Math.random()*.018+.005,ph:Math.random()*Math.PI*2}));
+class Lantern{constructor(d=0){this.re();this.y+=d*95;this.a=0;}
+re(){this.x=(.1+Math.random()*.8)*ecv.width;this.y=ecv.height+55;this.vy=-(Math.random()*.7+.4);this.vx=(Math.random()-.5)*.35;this.sz=Math.random()*15+10;this.a=0;this.ph=Math.random()*Math.PI*2;this.hue=Math.random()<.6?30:14;}
+upd(t){this.y+=this.vy;this.x+=this.vx+Math.sin(t*.01+this.ph)*.3;if(this.a<.92)this.a+=.008;if(this.y<-75)this.re();}
+draw(){ectx.save();ectx.globalAlpha=this.a*.9;
+const g=ectx.createRadialGradient(this.x,this.y,0,this.x,this.y,this.sz*3);
+g.addColorStop(0,`hsla(${this.hue+42},100%,90%,.38)`);g.addColorStop(.5,`hsla(${this.hue+22},100%,70%,.16)`);g.addColorStop(1,`hsla(${this.hue},92%,50%,0)`);
+ectx.beginPath();ectx.arc(this.x,this.y,this.sz*3,0,Math.PI*2);ectx.fillStyle=g;ectx.fill();
+const bg=ectx.createLinearGradient(this.x-this.sz*.52,this.y-this.sz*.68,this.x+this.sz*.52,this.y+this.sz*.64);
+bg.addColorStop(0,`hsla(${this.hue+48},100%,94%,.92)`);bg.addColorStop(.5,`hsla(${this.hue+22},100%,82%,.82)`);bg.addColorStop(1,`hsla(${this.hue},92%,62%,.7)`);
+ectx.beginPath();ectx.roundRect(this.x-this.sz*.5,this.y-this.sz*.65,this.sz,this.sz*1.2,3.5);ectx.fillStyle=bg;ectx.fill();
+ectx.fillStyle=`hsla(${this.hue},68%,42%,.76)`;
+ectx.fillRect(this.x-this.sz*.38,this.y-this.sz*.8,this.sz*.76,this.sz*.16);
+ectx.fillRect(this.x-this.sz*.38,this.y+this.sz*.52,this.sz*.76,this.sz*.16);
+ectx.beginPath();ectx.moveTo(this.x,this.y-this.sz*.8);ectx.lineTo(this.x,this.y-this.sz*1.12);
+ectx.strokeStyle=`hsla(${this.hue},52%,65%,.5)`;ectx.lineWidth=.9;ectx.stroke();ectx.restore();}}
+const lntrns=Array.from({length:16},(_,i)=>new Lantern(i));
+class Shooter{constructor(){this.a=false;this.timer=Math.random()*320+120;}
+re(){this.x=Math.random()*ecv.width*.65;this.y=Math.random()*ecv.height*.28;this.len=Math.random()*140+70;this.sp=Math.random()*16+9;this.a=true;this.alpha=1;this.ang=Math.PI/5+Math.random()*.2;}
+upd(){if(!this.a){this.timer--;if(this.timer<=0)this.re();return;}this.x+=Math.cos(this.ang)*this.sp;this.y+=Math.sin(this.ang)*this.sp;this.alpha-=.026;if(this.alpha<=0||this.x>ecv.width+70){this.a=false;this.timer=Math.random()*650+350;}}
+draw(){if(!this.a)return;ectx.save();ectx.globalAlpha=this.alpha*.88;
+const sg=ectx.createLinearGradient(this.x,this.y,this.x-Math.cos(this.ang)*this.len,this.y-Math.sin(this.ang)*this.len);
+sg.addColorStop(0,'rgba(255,255,255,.95)');sg.addColorStop(1,'rgba(255,255,255,0)');
+ectx.beginPath();ectx.moveTo(this.x,this.y);ectx.lineTo(this.x-Math.cos(this.ang)*this.len,this.y-Math.sin(this.ang)*this.len);
+ectx.strokeStyle=sg;ectx.lineWidth=1.8;ectx.stroke();ectx.restore();}}
+const shooters=Array.from({length:3},()=>new Shooter());
+let et=0;
+(function el(){
+  ectx.clearRect(0,0,ecv.width,ecv.height);
+  const sky=ectx.createLinearGradient(0,0,0,ecv.height);
+  sky.addColorStop(0,'#030509');sky.addColorStop(.35,'#050912');sky.addColorStop(.7,'#070e18');sky.addColorStop(1,'#091020');
+  ectx.fillStyle=sky;ectx.fillRect(0,0,ecv.width,ecv.height);
+  const mw=ectx.createLinearGradient(0,ecv.height*.05,ecv.width,ecv.height*.7);
+  mw.addColorStop(0,'rgba(110,120,180,0)');mw.addColorStop(.4,'rgba(160,175,225,.09)');mw.addColorStop(.6,'rgba(160,175,225,.09)');mw.addColorStop(1,'rgba(110,120,180,0)');
+  ectx.fillStyle=mw;ectx.fillRect(0,0,ecv.width,ecv.height);
+  eStars.forEach(s=>{s.ph+=s.sp;const a=s.a*(.4+Math.sin(s.ph)*.6);ectx.beginPath();ectx.arc(s.x*ecv.width,s.y*ecv.height,s.r,0,Math.PI*2);ectx.fillStyle=`rgba(255,255,255,${a})`;ectx.shadowBlur=8;ectx.shadowColor=`rgba(255,255,255,${a*.35})`;ectx.fill();ectx.shadowBlur=0;});
+  // Moon
+  const mx=ecv.width*.74,my=ecv.height*.1;
+  const mg=ectx.createRadialGradient(mx,my,0,mx,my,92);mg.addColorStop(0,'rgba(245,238,215,.13)');mg.addColorStop(1,'rgba(210,198,170,0)');
+  ectx.beginPath();ectx.arc(mx,my,92,0,Math.PI*2);ectx.fillStyle=mg;ectx.fill();
+  const mb=ectx.createRadialGradient(mx-8,my-8,0,mx,my,23);mb.addColorStop(0,'rgba(255,254,240,.98)');mb.addColorStop(.65,'rgba(248,242,218,.92)');mb.addColorStop(1,'rgba(228,220,190,.78)');
+  ectx.beginPath();ectx.arc(mx,my,23,0,Math.PI*2);ectx.fillStyle=mb;ectx.fill();
+  ectx.save();ectx.globalCompositeOperation='destination-out';ectx.beginPath();ectx.arc(mx+14,my-5,18,0,Math.PI*2);ectx.fillStyle='rgba(0,0,0,.5)';ectx.fill();ectx.restore();
+  shooters.forEach(s=>{s.upd();s.draw();});
+  lntrns.forEach(l=>{l.upd(et);l.draw();});
+  const gm=ectx.createLinearGradient(0,ecv.height*.78,0,ecv.height);
+  gm.addColorStop(0,'rgba(9,14,28,0)');gm.addColorStop(.5,'rgba(6,10,22,.5)');gm.addColorStop(1,'rgba(3,6,16,.95)');
+  ectx.fillStyle=gm;ectx.fillRect(0,ecv.height*.78,ecv.width,ecv.height*.22);
+  et++;requestAnimationFrame(el);
+})();
+
+/* PROGRESS + DOTS */
+const prog=document.getElementById('prog');
+const scenes=['s1','s2','s3','s4','s5','s6','s7','s8','s9','s10'];
+const dots=document.querySelectorAll('.nd');
+dots.forEach(d=>d.addEventListener('click',()=>document.getElementById(d.dataset.t).scrollIntoView({behavior:'smooth'})));
+window.addEventListener('scroll',()=>{
+  prog.style.width=(scrollY/(document.body.scrollHeight-innerHeight)*100)+'%';
+  let act=0;
+  scenes.forEach((id,i)=>{const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<=innerHeight*.55)act=i;});
+  dots.forEach((d,i)=>d.classList.toggle('on',i===act));
+});
+
+/* SCROLL REVEAL */
+const obs=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('on');}),{threshold:.07});
+document.querySelectorAll('.scene,#s10').forEach(s=>obs.observe(s));
+
+/* TIMELINE */
+const tlObs=new IntersectionObserver(e=>e.forEach(x=>{
+  if(!x.isIntersecting)return;
+  ['t1','t2','t3','t4'].forEach((id,i)=>setTimeout(()=>{const el=document.getElementById(id);if(el)el.classList.add('on');},i*350));
+  tlObs.disconnect();
+}),{threshold:.1});
+const s6el=document.getElementById('s6');if(s6el)tlObs.observe(s6el);
+
+/* CHAT BUBBLES */
+const chatObs=new IntersectionObserver(e=>e.forEach(x=>{
+  if(!x.isIntersecting)return;
+  document.querySelectorAll('.bbl').forEach((b,i)=>setTimeout(()=>b.classList.add('show'),i*400+320));
+  setTimeout(()=>{const td=document.getElementById('tdots');if(td){td.style.display='flex';setTimeout(()=>td.style.display='none',2200);}},7*400+250);
+  chatObs.disconnect();
+}),{threshold:.3});
+const s3el=document.getElementById('s3');if(s3el)chatObs.observe(s3el);
+
+/* DELETED FILES */
+const delObs=new IntersectionObserver(e=>e.forEach(x=>{
+  if(!x.isIntersecting)return;
+  document.querySelectorAll('.del-item').forEach(item=>{
+    const delay=parseInt(item.dataset.delay)||0;
+    setTimeout(()=>item.classList.add('deleted'),delay+550);
+  });
+  delObs.disconnect();
+}),{threshold:.2});
+const s8el=document.getElementById('s8');if(s8el)delObs.observe(s8el);
+
+/* SPARK LOST ANIMATION */
+const sparkObs=new IntersectionObserver(e=>e.forEach(x=>{
+  if(!x.isIntersecting)return;
+  const sparkBox=document.getElementById('sparkLost');
+  if(sparkBox)sparkBox.classList.add('on');
+  
+  // Animate words in each paragraph
+  const animateWords=(containerId,startDelay)=>{
+    const container=document.getElementById(containerId);
+    if(!container)return;
+    const words=container.querySelectorAll('.fade-word');
+    words.forEach((word,i)=>setTimeout(()=>word.classList.add('show'),startDelay+i*50));
+  };
+  
+  setTimeout(()=>animateWords('sparkText1',350),0);
+  setTimeout(()=>animateWords('sparkText2',2000),0);
+  setTimeout(()=>animateWords('sparkText3',3600),0);
+  
+  sparkObs.disconnect();
+}),{threshold:.2});
+if(s8el)sparkObs.observe(s8el);
+
+/* ENDING SEQUENCE */
+const endObs=new IntersectionObserver(e=>e.forEach(x=>{
+  if(!x.isIntersecting)return;
+  setTimeout(()=>document.querySelectorAll('.pl').forEach((l,i)=>setTimeout(()=>l.classList.add('s'),i*260)),2000);
+  setTimeout(()=>document.querySelectorAll('.truth').forEach((t,i)=>setTimeout(()=>t.classList.add('s'),i*300)),3500);
+  endObs.disconnect();
+}),{threshold:.1});
+const s10el=document.getElementById('s10');if(s10el)endObs.observe(s10el);
+</script>
+</body>
+</html>
